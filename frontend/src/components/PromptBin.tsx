@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import React from 'react';
-
-
+import { Ollama } from "ollama";
 
 interface Message {
   id: number;
@@ -14,32 +13,94 @@ interface Message {
 const PromptBin = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const chatAreaRef = useRef<HTMLDivElement>(null);
 
-  const handleSend = () => {
+  useEffect(() => {
+    if (chatAreaRef.current) {
+      chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const handleSend = async () => {
     if (inputValue.trim() === '') return;
 
-    const newMessage: Message = {
+    const userMessage: Message = {
       id: Date.now(),
       text: inputValue,
       sender: 'user',
     };
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
+    const currentInput = inputValue; // Capture current input for ollama
     setInputValue('');
 
-    // Simulate LLM response
-    setTimeout(() => {
-      const llmResponse: Message = {
-        id: Date.now() + 1, // Ensure unique ID
-        text: 'Hi, im under construction right now! Come back soon tho :)',
+    await getOllama(currentInput); // Call getOllama with the user's input
+  };
+  
+  async function getOllama(userInput: string) {
+    const ollama = new Ollama(); // Assuming Ollama is configured for your setup
+    try {
+      const responseStream = await ollama.chat({
+        model: 'llama3.2:latest', // Ensure this model is available locally
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a helpful assistant that can answer questions and help with tasks.'
+          },
+          {
+            role: 'user',
+            content: userInput
+          }
+        ],
+        stream: true // Enable streaming
+      });
+
+      let llmMessageId: number | null = null;
+      let accumulatedText = "";
+
+      for await (const part of responseStream) {
+        if (part.message && typeof part.message.content === 'string') {
+          if (llmMessageId === null) {
+            // First chunk of a new response
+            llmMessageId = Date.now() + Math.random(); // Create a unique ID for the new LLM message
+            accumulatedText = part.message.content;
+            const newLlmMessage: Message = {
+              id: llmMessageId,
+              text: accumulatedText,
+              sender: 'llm',
+            };
+            setMessages((prevMessages) => [...prevMessages, newLlmMessage]);
+          } else {
+            // Subsequent chunks for the current LLM message
+            accumulatedText += part.message.content;
+            setMessages((prevMessages) =>
+              prevMessages.map((msg) =>
+                msg.id === llmMessageId
+                  ? { ...msg, text: accumulatedText } // Update with the full accumulated text
+                  : msg
+              )
+            );
+          }
+        }
+        // part.done can be used to detect the end of the stream for a given call if needed
+      }
+    } catch (error) {
+      console.error("Error calling Ollama or processing stream:", error);
+      const llmErrorResponse: Message = {
+        id: Date.now() + 1,
+        text: "Error: Failed to connect to Ollama or stream response. Check if Ollama is running and the model is available.",
         sender: 'llm',
       };
-      setMessages((prevMessages) => [...prevMessages, llmResponse]);
-    }, 1000);
-  };
+      setMessages((prevMessages) => [...prevMessages, llmErrorResponse]);
+    }
+  }
 
   return (
     <main style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '20px', boxSizing: 'border-box', minHeight: 0 }}>
-      <div className="promptbin-chat-area" style={{ flexGrow: 1, minHeight: 0, overflowY: 'auto', marginBottom: '20px', border: '1px solid #ccc', padding: '10px', borderRadius: '5px', display: 'flex', flexDirection: 'column' }}>
+      <div 
+        ref={chatAreaRef} 
+        className="promptbin-chat-area" 
+        style={{ flexGrow: 1, minHeight: 0, overflowY: 'auto', marginBottom: '20px', border: '1px solid #ccc', padding: '10px', borderRadius: '5px', display: 'flex', flexDirection: 'column' }}
+      >
         {messages.map((msg) => (
           <div
             key={msg.id}
