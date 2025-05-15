@@ -1,0 +1,81 @@
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: #f3f4f6;
+  background-color: #181a20;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #181a20;
+  color: #f3f4f6;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #f3f4f6;
+}
+
+a {
+  font-weight: 500;
+  color: #7aa2f7;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #a6adff;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid #23272f;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: #23272f;
+  color: #f3f4f6;
+  cursor: pointer;
+  transition: border-color 0.25s, background 0.25s;
+}
+button:hover {
+  border-color: #7aa2f7;
+  background: #23272f;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto #7aa2f7;
+}
+
+/* Blueprint and Mosaic dark mode overrides */
+.bp4-dark, .mosaic-root, .mosaic-window, .mosaic-window-body {
+  background: #181a20 !important;
+  color: #f3f4f6 !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+/* Remove light mode overrides */
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #f3f4f6;
+    background-color: #181a20;
+  }
+  a:hover {
+    color: #a6adff;
+  }
+  button {
+    background-color: #23272f;
+  }
+}
