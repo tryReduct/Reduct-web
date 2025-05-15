@@ -1,4 +1,4 @@
-import { Mosaic, MosaicWindow } from 'react-mosaic-component';
+import { Mosaic, MosaicWindow, MosaicContext } from 'react-mosaic-component';
 import { Button } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 
@@ -35,33 +35,33 @@ const App = () => {
       <div id="app">
         <Mosaic<string>
           renderTile={(id, path) => (
-            <MosaicWindow<string>
-              path={path}
-              title={TITLE_MAP[id] || "Unknown Window"}
-              createNode={createNode}
-              toolbarControls={[
-                <Button
-                  key="expand"
-                  icon={IconNames.MAXIMIZE}
-                  minimal
-                  title="Expand"
-                  onClick={() => {
-                    // Expand logic can be handled by Mosaic's built-in controls, so this is just a placeholder
-                  }}
-                />, 
-                <Button
-                  key="close"
-                  icon={IconNames.CROSS}
-                  minimal
-                  title="Close"
-                  onClick={() => {
-                    // Close logic is handled by Mosaic's built-in controls, so this is just a placeholder
-                  }}
-                />
-              ]}
-            >
-              {ELEMENT_MAP[id]}
-            </MosaicWindow>
+            <MosaicContext.Consumer>
+              {({ mosaicActions }) => (
+                <MosaicWindow<string>
+                  path={path}
+                  title={TITLE_MAP[id] || "Unknown Window"}
+                  createNode={createNode}
+                  toolbarControls={[
+                    <Button
+                      key="expand"
+                      icon={IconNames.MAXIMIZE}
+                      minimal
+                      title="Expand"
+                      onClick={() => mosaicActions.expand(path)}
+                    />,
+                    <Button
+                      key="close"
+                      icon={IconNames.CROSS}
+                      minimal
+                      title="Close"
+                      onClick={() => mosaicActions.remove(path)}
+                    />
+                  ]}
+                >
+                  {ELEMENT_MAP[id]}
+                </MosaicWindow>
+              )}
+            </MosaicContext.Consumer>
           )}
           initialValue={{
             direction: 'row',
