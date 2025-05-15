@@ -3,9 +3,12 @@ name = "backend"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
     "flask>=3.1.1",
     "flask-cors>=5.0.1",
     "python-dotenv>=1.1.0",
+    "twelvelabs>=0.4.7",
+    # werkzeug comes with flask – drop unless you need a newer version explicitly
+    "opencv-python-headless>=4.8.0,<5.0",
 ]
