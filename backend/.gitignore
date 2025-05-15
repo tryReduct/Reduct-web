@@ -1,0 +1,62 @@
+# Python
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+#pytohn-verions
+.python-version
+
+
+# Virtual environment
+# uv default is .venv. Also common names like venv/ and env/
+.venv/
+venv/
+env/
+
+# Environment variables
+# Store sensitive credentials, API keys, etc.
+# Should not be committed to the repository.
+.env
+.env.*
+# It's good practice to commit an example template.
+# The leading / ensures it matches .env.example in the same directory as this .gitignore.
+!/.env.example
+
+# IDEs and Editors
+.idea/         # JetBrains IDEs (PyCharm, IntelliJ, etc.)
+.vscode/       # Visual Studio Code (user-specific settings; project settings might be committed)
+*.swp          # Vim swap files
+*~             # Backup files created by some text editors
+
+# Operating System generated files
+.DS_Store      # macOS
+Thumbs.db      # Windows
+
+# Testing artifacts
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+nosetests.xml
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+wheels/
+pip-wheel-metadata/
+
+# Log files
+*.log
+logs/
+
+# Databases (if using local SQLite for development)
+*.sqlite3
+db.sqlite3
+*.db
+
+# Instance folder (common for Flask applications)
+instance/
