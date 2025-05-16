@@ -11,4 +11,8 @@ dependencies = [
     "twelvelabs>=0.4.7",
     # werkzeug comes with flask – drop unless you need a newer version explicitly
     "opencv-python-headless>=4.8.0,<5.0",
+    "dia>=0.1.8",
+    "soundfile>=0.13.1",
+    "pymongo>=4.13.0",
+    "flask-bcrypt>=1.0.1",
 ]

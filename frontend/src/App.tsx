@@ -1,20 +1,23 @@
 import { Mosaic, MosaicWindow, MosaicContext } from 'react-mosaic-component';
 import { Button } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-
 import 'react-mosaic-component/react-mosaic-component.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import PromptBin from './components/PromptBin';
 import MediaBin from './components/MediaBin';
+import TimelineControl from './components/TimelineControl';
+import SourceMonitor from './components/SourceMonitor';
 import './app.css';
 
 const ELEMENT_MAP: { [viewId: string]: JSX.Element } = {
   promptBin: <PromptBin />,
   // promptBin: <div>Prompt Bin</div>,
   // mediaBin: <div>Media Bin</div>,
-  sourceMonitor: <div>Source Monitor</div>,
-  timelineControl: <div>Timeline</div>,
+  // sourceMonitor: <div>Source Monitor</div>,
+  sourceMonitor: <SourceMonitor />,
+  // timelineControl: <div>Timeline</div>,
+  timelineControl: <TimelineControl />,
   mediaBin: <MediaBin onImport={() => {}} />,
   newView: <div>New View Content</div>,
 };
