@@ -1,5 +1,6 @@
 // 1) a drop-to-upload zone (react-drag-drop-files)
 import { useRef, useState, useEffect } from "react";
+import { useDrag } from 'react-dnd';
 
 // Supported formats dictionary
 const SUPPORTED_FORMATS = {
@@ -64,6 +65,88 @@ interface UploadedFile {
   file: File;
   preview: string;
 }
+
+interface DraggableMediaItemProps {
+  uploadedFile: UploadedFile;
+  index: number;
+}
+
+const DraggableMediaItem = ({ uploadedFile, index }: DraggableMediaItemProps) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'media',
+    item: { media: uploadedFile },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging()
+    })
+  }));
+
+  return (
+    <div
+      ref={drag as any}
+      style={{
+        position: 'relative',
+        aspectRatio: '1',
+        borderRadius: '8px',
+        overflow: 'hidden',
+        backgroundColor: '#2a2a2a',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        opacity: isDragging ? 0.5 : 1,
+        cursor: 'move'
+      }}
+    >
+      {uploadedFile.file.type.startsWith('image/') ? (
+        <img
+          src={uploadedFile.preview}
+          alt={uploadedFile.file.name}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover'
+          }}
+        />
+      ) : uploadedFile.file.type.startsWith('video/') ? (
+        <video
+          src={uploadedFile.preview}
+          muted
+          playsInline
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover'
+          }}
+        />
+      ) : (
+        <div style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '48px'
+        }}>
+          📄
+        </div>
+      )}
+      <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        padding: '8px',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        fontSize: '12px',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+      }}>
+        {uploadedFile.file.name}
+      </div>
+    </div>
+  );
+};
 
 export default function MediaBin({ onImport }: { onImport: (files: File[]) => void }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -253,68 +336,11 @@ const acceptString = [
           maxHeight: 'calc(100% - 200px)'
         }}>
           {uploadedFiles.map((uploadedFile, index) => (
-            <div
+            <DraggableMediaItem
               key={index}
-              style={{
-                position: 'relative',
-                aspectRatio: '1',
-                borderRadius: '8px',
-                overflow: 'hidden',
-                backgroundColor: '#2a2a2a',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              {uploadedFile.file.type.startsWith('image/') ? (
-                <img
-                  src={uploadedFile.preview}
-                  alt={uploadedFile.file.name}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover'
-                  }}
-                />
-              ) : uploadedFile.file.type.startsWith('video/') ? (
-<video
-  src={uploadedFile.preview}
-  muted
-  playsInline
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover'
-                  }}
-                />
-              ) : (
-                <div style={{
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '48px'
-                }}>
-                  📄
-                </div>
-              )}
-              <div style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                padding: '8px',
-                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                fontSize: '12px',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}>
-                {uploadedFile.file.name}
-              </div>
-            </div>
+              uploadedFile={uploadedFile}
+              index={index}
+            />
           ))}
         </div>
       )}
